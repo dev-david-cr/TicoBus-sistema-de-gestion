@@ -1,0 +1,133 @@
+﻿@model IEnumerable<SistemaTicoBus.MODEL.Entidades.Unidad>
+
+@{
+    Layout = "~/Views/Shared/_LayoutDashboard.cshtml";
+    ViewData["Title"] = "Catálogo de Unidades";
+    ViewData["Seccion"] = "Unidades";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <small class="text-muted text-uppercase fw-semibold">Operaciones / Flota</small>
+        <h1 class="fw-bold text-dark mb-0">Gestión de Unidades de Transporte</h1>
+    </div>
+</div>
+
+@if (TempData["MensajeError"] != null)
+{
+    <div class="alert alert-warning alert-dismissible fade show shadow-sm" role="alert">
+        <i class="bi bi-exclamation-triangle me-2"></i>
+        <strong>Restricción de Integridad:</strong> @TempData["MensajeError"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["MensajeExito"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+        <i class="bi bi-check-circle me-2"></i> @TempData["MensajeExito"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<div class="row g-4">
+
+    <div class="col-lg-4">
+        <div class="dashboard-card">
+            <h4 class="fw-bold mb-4 text-dark" id="tituloFormulario">Registrar Nueva Unidad</h4>
+            <form id="formUnidad" asp-controller="Unidad" asp-action="Crear" method="post">
+                <input type="hidden" id="placaOriginal" name="placaOriginal" />
+                <div class="mb-3">
+                    <label class="form-label">Placa</label>
+                    <input type="text" id="txtPlaca" name="Placa" class="form-control" placeholder="ABC-1234" required />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Modelo</label>
+                    <input type="text" id="txtModelo" name="Modelo" class="form-control" placeholder="Marcopolo Paradiso" required />
+                </div>
+                <div class="row g-2 mb-4">
+                    <div class="col-6">
+                        <label class="form-label">Año Fabricación</label>
+                        <input type="number" id="txtAnio" name="AnioFabricacion" class="form-control" placeholder="2024" required />
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label">Capacidad</label>
+                        <input type="number" id="txtCapacidad" name="CapacidadPasajeros" class="form-control" placeholder="54" required />
+                    </div>
+                </div>
+                <button type="submit" id="btnGuardar" class="btn btn-primario w-100">Guardar Unidad</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="dashboard-card mb-3">
+            <div class="input-group">
+                <span class="input-group-text bg-transparent border-0 text-muted">
+                    <i class="bi bi-search"></i>
+                </span>
+                <input type="text"
+                       id="filtroUnidades"
+                       class="form-control border-0 bg-transparent"
+                       placeholder="Filtrar por placa o modelo..." />
+            </div>
+        </div>
+        <div class="dashboard-card">
+            <table class="table tabla-dashboard align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th class="border-0 py-3">Placa</th>
+                        <th class="border-0 py-3">Modelo</th>
+                        <th class="border-0 py-3">Año</th>
+                        <th class="border-0 py-3">Capacidad</th>
+                        <th class="border-0 py-3">Estado</th>
+                        <th class="border-0 py-3 text-end">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaUnidades">
+                    @foreach (var unidad in Model)
+                    {
+                        <tr>
+                            <td><strong>@unidad.Placa</strong></td>
+                            <td>@unidad.Modelo</td>
+                            <td>@unidad.AnioFabricacion</td>
+                            <td>@unidad.CapacidadPasajeros Pax</td>
+                            <td><span class="badge-completado">● Activo</span></td>
+                            <td class="text-end">
+                                <button type="button"
+                                        class="btn btn-sm btn-outline-warning border-0"
+                                        title="Editar"
+                                        onclick="editarUnidad('@unidad.Placa', '@unidad.Modelo', @unidad.AnioFabricacion, @unidad.CapacidadPasajeros)">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function editarUnidad(placa, modelo, anio, capacidad) {
+            document.getElementById('txtPlaca').value = placa;
+            document.getElementById('txtModelo').value = modelo;
+            document.getElementById('txtAnio').value = anio;
+            document.getElementById('txtCapacidad').value = capacidad;
+            document.getElementById('placaOriginal').value = placa;
+            document.getElementById('tituloFormulario').innerText = 'Editar Unidad';
+            document.getElementById('btnGuardar').innerText = 'Guardar Cambios';
+            document.getElementById('formUnidad').action = '/Unidad/Editar';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        document.getElementById('filtroUnidades').addEventListener('input', function () {
+            const filtro = this.value.toLowerCase();
+            document.querySelectorAll('#tablaUnidades tr').forEach(fila => {
+                fila.style.display = fila.textContent.toLowerCase().includes(filtro) ? '' : 'none';
+            });
+        });
+    </script>
+}

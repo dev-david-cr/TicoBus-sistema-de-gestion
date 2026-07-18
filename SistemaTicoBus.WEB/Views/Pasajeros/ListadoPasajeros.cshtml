@@ -1,0 +1,350 @@
+﻿@model IEnumerable<SistemaTicoBus.MODEL.Entidades.Pasajero>
+
+@{
+    Layout = "~/Views/Shared/_LayoutDashboard.cshtml";
+    ViewData["Title"] = "Registro de Pasajeros";
+    ViewData["Seccion"] = "Pasajeros";
+
+    var pasajeroEditar = ViewBag.PasajeroEditar as SistemaTicoBus.MODEL.Entidades.Pasajero;
+    bool esEdicion = pasajeroEditar != null;
+    string busqueda = ViewBag.Busqueda as string ?? string.Empty;
+    string accionFormulario = esEdicion ? "EditarPasajeroGuardar" : "RegistrarPasajeroGuardar";
+}
+
+<div class="mb-4">
+    <div class="text-uppercase text-muted fw-bold" style="font-size:0.75rem; letter-spacing:.08em;">
+        Chofer &gt; Registrar Pasajero
+    </div>
+    <h2 class="fw-bold mb-0 mt-2">Registro de Pasajeros</h2>
+</div>
+
+<div class="row g-4 align-items-start">
+    <div class="col-xl-3 col-lg-4">
+        <div class="card border-0 shadow-sm" style="border-radius:1rem;">
+            <div class="card-body p-4">
+                <div class="d-flex align-items-center gap-2 pb-3 mb-3 border-bottom">
+                    <span class="material-symbols-outlined text-success">
+                        @(esEdicion ? "edit" : "person_add")
+                    </span>
+                    <h5 class="fw-bold mb-0">
+                        @(esEdicion ? "Modificar Pasajero" : "Registrar Nuevo Pasajero")
+                    </h5>
+                </div>
+
+                <div class="alert alert-danger d-none" id="mensajeValidacionPasajero"></div>
+
+                <form id="formPasajero"
+                      asp-controller="Pasajeros"
+                      asp-action="@accionFormulario"
+                      method="post"
+                      novalidate>
+                    @Html.AntiForgeryToken()
+
+                    @if (esEdicion)
+                    {
+                        <input type="hidden" name="idOriginal" value="@ViewBag.IdOriginal" />
+                    }
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-uppercase text-muted">Identificación / Cédula</label>
+                        <input type="text"
+                               name="Identificacion"
+                               maxlength="30"
+                               placeholder="Ej: 333333333 o 3-3333-3333"
+                               value="@(esEdicion ? pasajeroEditar?.Identificacion : string.Empty)"
+                               class="form-control" />
+                        <small class="text-muted">Puede usar solo números o el formato con guiones existente.</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-uppercase text-muted">Nombre</label>
+                        <input type="text"
+                               name="Nombre"
+                               maxlength="50"
+                               placeholder="Nombre del pasajero"
+                               value="@(esEdicion ? pasajeroEditar?.Nombre : string.Empty)"
+                               class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-uppercase text-muted">Apellidos</label>
+                        <input type="text"
+                               name="Apellidos"
+                               maxlength="50"
+                               placeholder="Apellidos del pasajero"
+                               value="@(esEdicion ? pasajeroEditar?.Apellidos : string.Empty)"
+                               class="form-control" />
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold small text-uppercase text-muted">Correo Electrónico</label>
+                        <input type="text"
+                               name="Correo"
+                               maxlength="100"
+                               placeholder="correo@ejemplo.com"
+                               value="@(esEdicion ? pasajeroEditar?.Correo : string.Empty)"
+                               class="form-control" />
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        @if (esEdicion)
+                        {
+                            <a href="/Pasajeros/ListadoPasajeros" class="btn btn-outline-secondary flex-fill fw-bold">
+                                Cancelar
+                            </a>
+                        }
+
+                        <button type="submit" class="btn btn-success flex-fill fw-bold">
+                            @(esEdicion ? "Guardar Cambios" : "Registrar")
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-9 col-lg-8">
+        <div class="card border-0 shadow-sm mb-4" style="border-radius:1rem;">
+            <div class="card-body p-3">
+                <form action="/Pasajeros/ListadoPasajeros" method="get" class="row g-2">
+                    <div class="col-md">
+                        <input type="text"
+                               name="buscarNombre"
+                               value="@busqueda"
+                               placeholder="Buscar pasajeros por nombre..."
+                               class="form-control" />
+                    </div>
+                    <div class="col-md-auto d-flex gap-2">
+                        <button type="submit" class="btn btn-dark fw-bold px-4">Buscar</button>
+                        @if (!string.IsNullOrWhiteSpace(busqueda))
+                        {
+                            <a href="/Pasajeros/ListadoPasajeros" class="btn btn-outline-secondary fw-bold">Limpiar</a>
+                        }
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm" style="border-radius:1rem;">
+            <div class="card-header bg-white border-0 px-4 pt-4 pb-2 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0">Pasajeros registrados</h5>
+                <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle">
+                    @(Model == null ? 0 : Model.Count()) resultado(s)
+                </span>
+            </div>
+
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light text-uppercase small text-muted">
+                            <tr>
+                                <th class="px-4 py-3">Cédula</th>
+                                <th class="px-4 py-3">Nombre</th>
+                                <th class="px-4 py-3">Apellidos</th>
+                                <th class="px-4 py-3">Correo</th>
+                                <th class="px-4 py-3 text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model == null || !Model.Any())
+                            {
+                                <tr>
+                                    <td colspan="5" class="px-4 py-5 text-center text-muted">
+                                        No hay pasajeros registrados.
+                                    </td>
+                                </tr>
+                            }
+                            else
+                            {
+                                foreach (var p in Model)
+                                {
+                                    <tr data-identificacion="@p.Identificacion"
+                                        data-correo="@p.Correo">
+                                        <td class="px-4 py-3 fw-bold">@p.Identificacion</td>
+                                        <td class="px-4 py-3">@p.Nombre</td>
+                                        <td class="px-4 py-3">@p.Apellidos</td>
+                                        <td class="px-4 py-3 text-success fw-semibold">@p.Correo</td>
+                                        <td class="px-4 py-3 text-center">
+                                            <a href="/Pasajeros/ListadoPasajeros?identificacionEditar=@p.Identificacion&buscarNombre=@busqueda"
+                                                   class="btn btn-warning btn-sm fw-bold">
+                                                <i class="bi bi-pencil-square me-1"></i> Editar
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const formPasajero = document.getElementById('formPasajero');
+
+        if (formPasajero) {
+            formPasajero.addEventListener('submit', function (event) {
+                limpiarMensajeValidacion();
+
+                const mensaje = validarFormularioPasajero();
+
+                if (mensaje) {
+                    event.preventDefault();
+                    mostrarMensajeValidacion(mensaje);
+                }
+            });
+        }
+
+        function validarFormularioPasajero() {
+            const identificacion = obtenerValor('Identificacion');
+            const nombre = obtenerValor('Nombre');
+            const apellidos = obtenerValor('Apellidos');
+            const correo = obtenerValor('Correo');
+
+            const idOriginalInput = document.querySelector('[name="idOriginal"]');
+            const idOriginal = idOriginalInput ? idOriginalInput.value.trim() : '';
+
+            if (!identificacion) {
+                return 'La cédula es requerida.';
+            }
+
+            if (!/^[0-9\-]+$/.test(identificacion)) {
+                return 'La cédula solo puede contener números y guiones. No use letras ni otros símbolos.';
+            }
+
+            const cedulaSinGuiones = identificacion.replace(/-/g, '');
+
+            if (cedulaSinGuiones.length < 6 || cedulaSinGuiones.length > 20) {
+                return 'La cédula debe tener entre 6 y 20 números.';
+            }
+
+            if (existeIdentificacionEnTabla(identificacion, idOriginal)) {
+                return 'Ya existe un pasajero con esa cédula.';
+            }
+
+            if (!nombre) {
+                return 'El nombre es requerido.';
+            }
+
+            if (!/^[A-Za-zÁÉÍÓÚáéíóúÑñÜü]+(?: [A-Za-zÁÉÍÓÚáéíóúÑñÜü]+)*$/.test(nombre)) {
+                return 'El nombre solo puede contener letras y espacios.';
+            }
+
+            if (nombre.length < 2 || nombre.length > 50) {
+                return 'El nombre debe tener entre 2 y 50 caracteres.';
+            }
+
+            if (!apellidos) {
+                return 'Los apellidos son requeridos.';
+            }
+
+            if (!/^[A-Za-zÁÉÍÓÚáéíóúÑñÜü]+(?: [A-Za-zÁÉÍÓÚáéíóúÑñÜü]+)*$/.test(apellidos)) {
+                return 'Los apellidos solo pueden contener letras y espacios.';
+            }
+
+            if (apellidos.length < 2 || apellidos.length > 50) {
+                return 'Los apellidos deben tener entre 2 y 50 caracteres.';
+            }
+
+            if (!correo) {
+                return 'El correo electrónico es requerido.';
+            }
+
+            if (correo.length > 100) {
+                return 'El correo electrónico no puede superar los 100 caracteres.';
+            }
+
+            if (!/^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/.test(correo)) {
+                return 'Ingrese un correo electrónico válido.';
+            }
+
+            if (existeCorreoEnTabla(correo, idOriginal)) {
+                return 'Ya existe un pasajero registrado con ese correo electrónico.';
+            }
+
+            return null;
+        }
+
+        function obtenerValor(nombreCampo) {
+            const campo = document.querySelector('[name="' + nombreCampo + '"]');
+
+            if (!campo) {
+                return '';
+            }
+
+            campo.value = campo.value.trim().replace(/\s+/g, ' ');
+            return campo.value;
+        }
+
+        function normalizarCedula(valor) {
+            return (valor || '').replace(/-/g, '').trim();
+        }
+
+        function existeIdentificacionEnTabla(identificacion, idOriginal) {
+            const filas = document.querySelectorAll('tr[data-identificacion]');
+            const identificacionNormalizada = normalizarCedula(identificacion);
+            const idOriginalNormalizado = normalizarCedula(idOriginal);
+
+            for (const fila of filas) {
+                const identificacionExistente = (fila.dataset.identificacion || '').trim();
+                const identificacionExistenteNormalizada = normalizarCedula(identificacionExistente);
+
+                if (
+                    identificacionExistenteNormalizada === identificacionNormalizada &&
+                    identificacionExistenteNormalizada !== idOriginalNormalizado
+                ) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        function existeCorreoEnTabla(correo, idOriginal) {
+            const filas = document.querySelectorAll('tr[data-correo]');
+            const correoNormalizado = correo.trim().toLowerCase();
+            const idOriginalNormalizado = normalizarCedula(idOriginal);
+
+            for (const fila of filas) {
+                const correoExistente = (fila.dataset.correo || '').trim().toLowerCase();
+                const identificacionExistente = (fila.dataset.identificacion || '').trim();
+                const identificacionExistenteNormalizada = normalizarCedula(identificacionExistente);
+
+                if (
+                    correoExistente === correoNormalizado &&
+                    identificacionExistenteNormalizada !== idOriginalNormalizado
+                ) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        function mostrarMensajeValidacion(mensaje) {
+            const alerta = document.getElementById('mensajeValidacionPasajero');
+
+            if (!alerta) {
+                alert(mensaje);
+                return;
+            }
+
+            alerta.textContent = mensaje;
+            alerta.classList.remove('d-none');
+        }
+
+        function limpiarMensajeValidacion() {
+            const alerta = document.getElementById('mensajeValidacionPasajero');
+
+            if (!alerta) {
+                return;
+            }
+
+            alerta.textContent = '';
+            alerta.classList.add('d-none');
+        }
+    </script>
+}
