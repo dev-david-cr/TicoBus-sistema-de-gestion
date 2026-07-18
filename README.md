@@ -2,7 +2,6 @@
 
 # 🚌 Sistema TicoBus
 ### Sistema de Gestión de Transporte Interurbano
-#### Universidad de Costa Rica
 
 <br/>
 
@@ -14,9 +13,7 @@
 
 <br/>
 
-> **Sistema de Gestión de Transporte** desarrollado como proyecto del curso  
-> *Lenguajes para Aplicaciones Comerciales* — Universidad de Costa Rica
-
+> **Sistema de Gestión de Transporte**
 </div>
 
 ---
@@ -87,30 +84,6 @@ dotnet run --project SistemaTicoBus.WEB
 
 ---
 
-## 👥 Equipo de Desarrollo
-
-<div align="center">
-
-| Nombre | Carné | Módulos | Primera Entrega |
-|--------|-------|---------|
-| David Daniel Sotela Sánchez | C17735 | Módulo 6 — Gestión de Viajes |
-| Keity López Reyes | C34387 | Módulos 3, 4 y 9 — Pasajeros, Rutas y Mis Viajes |
-| Génesis Gutiérrez Espinoza | C4F794 | Módulos 5 y 8 — Unidades y Viajes Cancelados |
-| Royland Ruiz Arias | C06978 | Módulo 7 — Viajes en Curso |
-| Diego Alejandro Quirós Clímaco | C06225 | Módulos 1 y 2 — Login, Choferes |
-
-| Nombre | Carné | Módulos | Segunda Entrega |
-|--------|-------|---------|
-| David Daniel Sotela Sánchez | C17735 | Módulos 4 — Aplicacion Móvil MAUI |
-| Keity López Reyes | C34387 | Módulo 3 — Publicacion en Azure |
-| Génesis Gutiérrez Espinoza | C4F794 | Módulo 2 — API REST Segura con API Key |
-| Royland Ruiz Arias | C06978 | Módulo 2 — API REST Segura con API Key |
-| Diego Alejandro Quirós Clímaco | C06225 | Módulo 2 — API REST Segura con API Key |
-
-</div>
-
----
-
 ## 📁 Buenas Prácticas Aplicadas
 
 - ✅ Arquitectura en capas (MODEL / DA / BL / WEB)
@@ -124,11 +97,3 @@ dotnet run --project SistemaTicoBus.WEB
 - ✅ Notificaciones por correo en eventos importantes
 
 ---
-
-<div align="center">
-
-**Universidad de Costa Rica**  
-*Lenguajes para Aplicaciones Comerciales*  
-2026
-
-</div>
